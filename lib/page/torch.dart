@@ -4,7 +4,6 @@ import 'package:torch/widget/torch_button.dart';
 import 'package:torch/util/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-// import 'package:torch_controller/torch_controller.dart';
 import 'package:torch_light/torch_light.dart';
 
 class Torch extends StatefulWidget {
@@ -36,6 +35,9 @@ class _Torch extends State<Torch> {
         appBar: PlatformAppBar(
           title: PlatformText('很赞手电筒'),
           material: (context, platform) => MaterialAppBarData(
+            backgroundColor: Colors.grey[850],
+          ),
+          cupertino: (context, platform) => CupertinoNavigationBarData(
             backgroundColor: Colors.grey[850],
           ),
         ),
