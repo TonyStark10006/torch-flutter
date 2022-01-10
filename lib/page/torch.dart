@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:torch/bloc/torch/event.dart';
+import 'package:torch/bloc/torch/torch.dart';
 import 'package:torch/widget/sos_button.dart';
 import 'package:torch/widget/torch_button.dart';
 import 'package:torch/util/toast.dart';
@@ -12,11 +15,6 @@ class Torch extends StatefulWidget {
 }
 
 class _Torch extends State<Torch> {
-  bool sosIsOn = false;
-  bool lightIsOn = false;
-  Timer? _timer;
-  Timer? _timerCancel;
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<bool>(
@@ -38,6 +36,10 @@ class _Torch extends State<Torch> {
   }
 
   Widget mainContent(BuildContext context) {
+    var torchBloc = BlocProvider.of<TorchBloc>(context);
+    var sosIsOn = context.watch<TorchBloc>().state.sosButton;
+    var lightIsOn = context.watch<TorchBloc>().state.lightButton;
+    // torchBloc.add(EnableTorch());
     return Container(
         decoration: const BoxDecoration(color: Colors.black),
         child: Column(
@@ -46,11 +48,9 @@ class _Torch extends State<Torch> {
               child: SOSButton(
                 isOn: sosIsOn,
                 SOSButtonCallback: () => {
-                  setState(() {
-                    sosIsOn = !sosIsOn;
-                    lightIsOn = false;
-                  }),
-                  sosIsOn ? cycleTorch() : cancelTimer(),
+                  sosIsOn
+                      ? torchBloc.add(DisableCycleTorch())
+                      : torchBloc.add(EnableCycleTorch()),
                   debugPrint('sosIsOn:$sosIsOn'),
                 },
               ),
@@ -63,16 +63,10 @@ class _Torch extends State<Torch> {
               child: TorchButton(
                 isOn: lightIsOn,
                 torchButtonCallback: () => {
-                  setState(() {
-                    lightIsOn = !lightIsOn;
-                    sosIsOn = false;
-                  }),
-                  if (lightIsOn) {
-                      cancelTimer(),
-                      _enableTorch(),
-                  } else {
-                    _disableTorch(),
-                  },
+                  lightIsOn
+                      ? torchBloc.add(DisableTorch())
+                      : torchBloc.add(EnableTorch()),
+
                   // lightIsOn
                   //     ? document.documentElement?.requestFullscreen()
                   //     : document.exitFullscreen(),
@@ -90,43 +84,6 @@ class _Torch extends State<Torch> {
     } on Exception catch (_) {
       showToast('无法确认设备是否有闪光灯');
       rethrow;
-    }
-  }
-
-  Future<void> _enableTorch() async {
-    try {
-      await TorchLight.enableTorch();
-    } on Exception catch (_) {
-      showToast('无法开启闪光灯');
-    }
-  }
-
-  Future<void> _disableTorch() async {
-    try {
-      await TorchLight.disableTorch();
-    } on Exception catch (_) {
-      showToast('无法关闭闪光灯');
-    }
-  }
-
-  Future<void> cycleTorch() async {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
-      await _enableTorch();
-
-      _timerCancel = Timer(
-          const Duration(milliseconds: 600),
-          () async => {
-                await _disableTorch(),
-                debugPrint('cycle嵌套timer'),
-              });
-    });
-  }
-
-  Future<void> cancelTimer() async {
-    if (_timer != null) {
-      _timer!.cancel();
-      _timerCancel!.cancel();
-      await _disableTorch();
     }
   }
 }
