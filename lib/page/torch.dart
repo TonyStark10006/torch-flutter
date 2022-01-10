@@ -16,52 +16,28 @@ class _Torch extends State<Torch> {
   bool lightIsOn = false;
   Timer? _timer;
   Timer? _timerCancel;
-  // static final torchController = TorchController();
-
-  // static Future<bool?> _toggle() async {
-  //   try {
-  //     return await torchController.toggle();
-  //   } on Exception catch (error) {
-  //     print(error);
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
-    return PlatformApp(
-      title: '很赞手电筒',
-      home: PlatformScaffold(
-        iosContentPadding: true,
-        appBar: PlatformAppBar(
-          title: PlatformText('很赞手电筒'),
-          material: (context, platform) => MaterialAppBarData(
-            backgroundColor: Colors.grey[850],
-          ),
-          cupertino: (context, platform) => CupertinoNavigationBarData(
-            backgroundColor: Colors.grey[850],
-          ),
-        ),
-        body: FutureBuilder<bool>(
-          future: _isTorchAvailable(),
-          builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-            if (snapshot.hasData && snapshot.data!) {
-              return genContent(context);
-            } else if (snapshot.hasData) {
-              return Center(
-                child: PlatformText('闪光灯不可用'),
-              );
-            } else {
-              return Center(
-                child: PlatformCircularProgressIndicator(),
-              );
-            }
-          },
-        ),
-      ),
+    return FutureBuilder<bool>(
+      future: _isTorchAvailable(),
+      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+        if (snapshot.hasData && snapshot.data!) {
+          return mainContent(context);
+        } else if (snapshot.hasData) {
+          return Center(
+            child: PlatformText('闪光灯不可用'),
+          );
+        } else {
+          return Center(
+            child: PlatformCircularProgressIndicator(),
+          );
+        }
+      },
     );
   }
 
-  Widget genContent(BuildContext context) {
+  Widget mainContent(BuildContext context) {
     return Container(
         decoration: const BoxDecoration(color: Colors.black),
         child: Column(
@@ -74,7 +50,6 @@ class _Torch extends State<Torch> {
                     sosIsOn = !sosIsOn;
                     lightIsOn = false;
                   }),
-                  // _toggle(),
                   sosIsOn ? cycleTorch() : cancelTimer(),
                   debugPrint('sosIsOn:$sosIsOn'),
                 },
@@ -92,15 +67,12 @@ class _Torch extends State<Torch> {
                     lightIsOn = !lightIsOn;
                     sosIsOn = false;
                   }),
-                  if (lightIsOn)
-                    {
+                  if (lightIsOn) {
                       cancelTimer(),
                       _enableTorch(),
-                    }
-                  else
-                    {
-                      _disableTorch(),
-                    },
+                  } else {
+                    _disableTorch(),
+                  },
                   // lightIsOn
                   //     ? document.documentElement?.requestFullscreen()
                   //     : document.exitFullscreen(),
