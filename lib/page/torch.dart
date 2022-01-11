@@ -15,6 +15,8 @@ class Torch extends StatefulWidget {
 }
 
 class _Torch extends State<Torch> {
+  static bool enabledWhenLaunch = false;
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<bool>(
@@ -39,7 +41,12 @@ class _Torch extends State<Torch> {
     var torchBloc = BlocProvider.of<TorchBloc>(context);
     var sosIsOn = context.watch<TorchBloc>().state.sosButton;
     var lightIsOn = context.watch<TorchBloc>().state.lightButton;
-    // torchBloc.add(EnableTorch());
+
+    if (!enabledWhenLaunch) {
+      torchBloc.add(EnableTorch());
+      enabledWhenLaunch = true;
+    }
+    
     return Container(
         decoration: const BoxDecoration(color: Colors.black),
         child: Column(

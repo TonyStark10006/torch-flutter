@@ -10,7 +10,6 @@ import 'event.dart';
 
 class TorchBloc extends Bloc<TorchBlocEvent, TorchBlocState> {
   TorchBloc() : super(TorchBlocState().init())  {
-    //TorchBlocState().enableTorch()
     on<EnableTorch>((event, emit) => {
           _disableCycleTorch(),
           _enableTorch(),
@@ -34,7 +33,7 @@ class TorchBloc extends Bloc<TorchBlocEvent, TorchBlocState> {
     on<EnableTorchWhenLaunch>((event, emit) => {
           _disableCycleTorch(),
           _enableTorch(),
-          // emit(state.clone()),
+          emit(state.enableTorchWhenLaunch()),
         });
 
     // on<InitEvent>((event, emit) => {

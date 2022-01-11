@@ -14,6 +14,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
+      lazy: false,
       create: (context) => TorchBloc(),
       child: PlatformApp(
         title: '很赞手电筒',

@@ -16,7 +16,7 @@ class TorchBlocState {
     return TorchBlocState()..lightButton = lightButton;
   }
 
-  TorchBlocState enableTorch() {
+  TorchBlocState enableTorchWhenLaunch() {
     return TorchBlocState()..lightButton = true;
   }
 
