@@ -27,6 +27,10 @@ class App extends StatelessWidget {
             ),
             cupertino: (context, platform) => CupertinoNavigationBarData(
               backgroundColor: Colors.grey[850],
+              title: PlatformText(
+                '很赞手电筒',
+                style: const TextStyle(color: Colors.white),
+              ),
             ),
           ),
           body: Torch(),
