@@ -2,12 +2,16 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torch/bloc/torch/event.dart';
 import 'package:torch/bloc/torch/torch.dart';
+import 'package:torch/contants.dart';
+import 'package:torch/widget/custom_platfrom_scaffold.dart';
 import 'package:torch/widget/sos_button.dart';
 import 'package:torch/widget/torch_button.dart';
 import 'package:torch/util/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:torch_light/torch_light.dart';
+
+import 'about.dart';
 
 class Torch extends StatefulWidget {
   @override
@@ -19,22 +23,42 @@ class _Torch extends State<Torch> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<bool>(
-      future: _isTorchAvailable(),
-      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-        if (snapshot.hasData && snapshot.data!) {
-          return mainContent(context);
-        } else if (snapshot.hasData) {
-          return Center(
-            child: PlatformText('闪光灯不可用'),
-          );
-        } else {
-          return Center(
-            child: PlatformCircularProgressIndicator(),
-          );
-        }
-      },
-    );
+    return CustomPlatfromScaffold(
+        title: app_title_cn,
+        body: FutureBuilder<bool>(
+          future: _isTorchAvailable(),
+          builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+            if (snapshot.hasData && snapshot.data!) {
+              return mainContent(context);
+            } else if (snapshot.hasData) {
+              return Center(
+                child: PlatformText('闪光灯不可用'),
+              );
+            } else {
+              return Center(
+                child: PlatformCircularProgressIndicator(),
+              );
+            }
+          },
+        ),
+        trailingActions: [
+          PlatformIconButton(
+            icon: Icon(
+              PlatformIcons(context).info,
+              color: Colors.white,
+            ),
+            onPressed: () => {
+              Navigator.push(
+                  context,
+                  platformPageRoute(
+                    context: context,
+                    builder: (context) => const About(),
+                  )),
+              debugPrint('点击了信息按钮'),
+            },
+          ),
+        ],
+        );
   }
 
   Widget mainContent(BuildContext context) {
@@ -46,7 +70,7 @@ class _Torch extends State<Torch> {
       torchBloc.add(EnableTorch());
       enabledWhenLaunch = true;
     }
-    
+
     return Container(
         decoration: const BoxDecoration(color: Colors.black),
         child: Column(
